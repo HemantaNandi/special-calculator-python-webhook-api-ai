@@ -33,7 +33,7 @@ def loanEmi(req):
     result = req.get("result")
     parameters = result.get("parameters")
     Loan_amount = int(parameters.get("number"))
-    Interest_rate = parameters.get("interest-rate")
+    Interest_rate = parameters.get("percentage")
     Interest_rate = float(Interest_rate.strip('%'))
     Payment_period = int(parameters.get("number-integer"))
     Interest_rate = float((Interest_rate/100))
