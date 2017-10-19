@@ -37,9 +37,9 @@ def loanEmi(req):
     Interest_rate = float(Interest_rate.strip('%'))
     Payment = parameters.get("duration")
     if str(Payment["unit"]) == "mo":
-        Payment_period = int(Payment[amount])
+        Payment_period = int(Payment["amount"])
     elif str(Payment["unit"]) == "yr":
-        Payment_period = int(Payment[amount]) * 12
+        Payment_period = int(Payment["amount"]) * 12
     Interest_rate = float((Interest_rate/100))
     Month_Payment = int((Loan_amount*pow((Interest_rate/12)+1,
                                  (Payment_period))*Interest_rate/12)/(pow(Interest_rate/12+1,
