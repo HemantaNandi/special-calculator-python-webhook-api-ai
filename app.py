@@ -32,9 +32,9 @@ def webhook():
 def loanEmi(req):
     result = req.get("result")
     parameters = result.get("parameters")
-    Loan_amount = parameters.get("loan-amount")
-    Interest_rate = parameters.get("interest-rate")
-    Payment_period = parameters.get("payment-period")
+    Loan_amount = int(parameters.get("loan-amount"))
+    Interest_rate = float(parameters.get("interest-rate"))
+    Payment_period = int(parameters.get("payment-period"))
     Interest_rate = (Interest_rate/100)
     Month_Payment = (Loan_amount*pow((Interest_rate/12)+1,
                                  (Payment_period))*Interest_rate/12)/(pow(Interest_rate/12+1,
