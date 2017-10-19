@@ -35,7 +35,7 @@ def loanEmi(req):
     Loan_amount = parameters.get("loan-amount")
     Interest_rate = parameters.get("interest-rate")
     Payment_period = parameters.get("payment-period")
-    Interest_rate = (Interest_rate /100.0)
+    Interest_rate = (Interest_rate/100)
     Month_Payment = (Loan_amount*pow((Interest_rate/12)+1,
                                  (Payment_period))*Interest_rate/12)/(pow(Interest_rate/12+1,
                                  (Payment_period)) - 1)
