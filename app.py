@@ -20,7 +20,7 @@ def webhook():
     print(json.dumps(req, indent=4))
     if req.get("result").get("action") == "bank.rates":
         res = makeWebhookResult(req) 
-    elif req.get("result").get("action") == "loan.emi"
+    elif req.get("result").get("action") == "loan.emi":
         res = loanEmi(req)
        
     res = json.dumps(res, indent=4)
