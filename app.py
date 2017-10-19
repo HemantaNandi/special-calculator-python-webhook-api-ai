@@ -35,10 +35,10 @@ def loanEmi(req):
     Loan_amount = int(parameters.get("loan-amount"))
     Interest_rate = float(parameters.get("interest-rate"))
     Payment_period = int(parameters.get("payment-period"))
-    Interest_rate = (Interest_rate/100)
-    Month_Payment = (Loan_amount*pow((Interest_rate/12)+1,
+    Interest_rate = float((Interest_rate/100))
+    Month_Payment = int((Loan_amount*pow((Interest_rate/12)+1,
                                  (Payment_period))*Interest_rate/12)/(pow(Interest_rate/12+1,
-                                 (Payment_period)) - 1)
+                                 (Payment_period)) - 1))
     speech = "EMI :" + str(Month_Payment)
     print("Response:")
     print(speech)
