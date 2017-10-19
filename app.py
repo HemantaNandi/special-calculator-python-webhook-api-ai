@@ -18,14 +18,37 @@ def webhook():
 
     print("Request:")
     print(json.dumps(req, indent=4))
-
-    res = makeWebhookResult(req)
-
+    if req.get("result").get("action") == "bank.rates":
+        res = makeWebhookResult(req) 
+    elif req.get("result").get("action") == "loan.emi"
+        res = loanEmi(req)
+       
     res = json.dumps(res, indent=4)
     print(res)
     r = make_response(res)
     r.headers['Content-Type'] = 'application/json'
     return r
+
+def loanEmi(req):
+    result = req.get("result")
+    parameters = result.get("parameters")
+    Loan_amount = parameters.get("loan-amount")
+    Interest_rate = parameters.get("interest-rate")
+    Payment_period = parameters.get("payment-period")
+    Interest_rate = (Interest_rate /100.0)
+    Month_Payment = (Loan_amount*pow((Interest_rate/12)+1,
+                                 (Payment_period))*Interest_rate/12)/(pow(Interest_rate/12+1,
+                                 (Payment_period)) - 1)
+    speech = "EMI :" + str(Month_Payment)
+    print("Response:")
+    print(speech)
+    return {
+        "speech": speech,
+        "displayText": speech,
+        #"data": {},
+        #"contextOut": [],
+        "source": "special-calculator-python-webhook-api-ai"
+    }
 
 def makeWebhookResult(req):
     #if req.get("result").get("action") != "shipping.cost":
