@@ -109,9 +109,9 @@ def compoundInterestReverse(req):
 	totalSemiMaturity = int(m/(x/1+totalSemi/1))
 	totalSemi = int(m - totalSemiMaturity)
 	speech = "Amount :"+ str(totalSemiMaturity)+"\nYield :"+str(yieldSemi)
-        print("Response:")
+	print("Response:")
 	print(speech)
-	return{
+	return {
             "speech": speech,
             "displayText": speech,
             #"data": {},
