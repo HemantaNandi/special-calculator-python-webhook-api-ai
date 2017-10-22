@@ -21,7 +21,12 @@ def webhook():
     if req.get("result").get("action") == "bank.rates":
         res = makeWebhookResult(req) 
     elif req.get("result").get("action") == "loan.emi":
-        #res = loanEmi(req)
+        res = loanEmi(req)
+    elif req.get("result").get("action") == "calculate.fsf":
+        res = calculateFSF(req)
+    elif req.get("result").get("action") == "calculate.compoundinterest":
+        res = compoundInterest(req)
+    elif req.get("result").get("action") == "calculate.compoundinterestreverse":
         res = compoundInterestReverse(req)
     res = json.dumps(res, indent=4)
     print(res)
@@ -68,20 +73,20 @@ def compoundInterest(req):
     #interest = float((interest/100))
 
     #totalann = int((x*(pow(1 + ((y*.01)/1),z)))-x)
-    totalsemi = int((x*(pow(1 + ((y*.01)/2),(z*2))))-x)
-    #totalqtr = int((x*(pow(1 + ((y*.01)/4),(z*4))))-x)
+    #totalsemi = int((x*(pow(1 + ((y*.01)/2),(z*2))))-x)
+    totalqtr = int((x*(pow(1 + ((y*.01)/4),(z*4))))-x)
     #totalmth = int((x*(pow(1 + ((y*.01)/12),(z*12))))-x)
 
     #yieldann = float((((x*(pow(1 + ((y*.01)/1),1)))-x)/x)*100)
-    yieldsemi = float((((x*(pow(1 + ((y*.01)/2),(2))))-x)/x)*100)
-    #yieldqtr = float((((x*(pow(1 + ((y*.01)/4),(4))))-x)/x)*100)
+    #yieldsemi = float((((x*(pow(1 + ((y*.01)/2),(2))))-x)/x)*100)
+    yieldqtr = float((((x*(pow(1 + ((y*.01)/4),(4))))-x)/x)*100)
     #yieldmth = float((((x*(pow(1 + ((y*.01)/12),(12))))-x)/x)*100)
 
     #totalannMaturity = int(x/1+totalann/1)
-    totalsemiMaturity = int(x/1+totalsemi/1)
-    #totalqtrMaturity = int(x/1+totalqtr/1)
+    #totalsemiMaturity = int(x/1+totalsemi/1)
+    totalqtrMaturity = int(x/1+totalqtr/1)
     #totalmthMaturity = int(x/1+totalmth/1)
-    speech = "Total Interest :" + str(totalsemi)+"\nYield :"+str(yieldsemi)+"\nMaturity :"+str(totalsemiMaturity)
+    speech = "Total Interest :" + str(totalqtr)+"\nYield :"+str(yieldqtr)+"\nMaturity :"+str(totalqtrMaturity)
     print("Response:")
     print(speech)
     return {
@@ -103,12 +108,43 @@ def compoundInterestReverse(req):
 		z = int(Payment["amount"]) / 12
 	elif str(Payment["unit"]) == "yr":
 		z = int(Payment["amount"])
-	totalSemi = float((x*(pow(1 + ((y*.01)/2),(z*2))))-x)
-	yieldSemi = float((((x*(pow(1 + ((y*.01)/2),(2))))-x)/x)*100)
+	totalqtr = float((x*(pow(1 + ((y*.01)/4),(z*4))))-x)
+	yieldqtr = float((((x*(pow(1 + ((y*.01)/4),(4))))-x)/x)*100)
 	
-	totalSemiMaturity = int(m/(x/1+totalSemi/1))
-	totalSemi = int(m - totalSemiMaturity)
-	speech = "Amount :"+ str(totalSemiMaturity)+"\nYield :"+str(yieldSemi)
+	totalqtrMaturity = int(m/(x/1+totalqtr/1))
+	totalqtr = int(m - totalqtrMaturity)
+	speech = "Amount :"+ str(totalqtrMaturity)+"\nYield :"+str(yieldqtr)
+	print("Response:")
+	print(speech)
+	return {
+            "speech": speech,
+            "displayText": speech,
+            #"data": {},
+            #"contextOut": [],
+            "source": "special-calculator-python-webhook-api-ai"
+        }
+def calculateFSF(req) :
+	result = req.get("result")
+	parameters = result.get("parameters")
+	
+	a = int(parameters.get("number"))
+	Interest_rate = parameters.get("percentage")
+	b = float(Interest_rate.strip('%'))
+	Payment = parameters.get("duration")
+	if str(Payment["unit"]) == "mo":
+		c = int(Payment["amount"]) / 12
+	elif str(Payment["unit"]) == "yr":
+		c = int(Payment["amount"])
+	i = float((b/100)/12)
+	n = int(c*12)
+	v = float(1/(1+i))
+	z = float(pow((1+i),n))
+	w = float(pow(v,n))
+	
+	totala = int((a*((1-w)/i)*(1+i))*z)
+	totalamt = int(a*n)
+	totalint = int(totala - totalamt)
+        speech = "Amount :"+ str(totala)+"\nYield :"+str(totalint)
 	print("Response:")
 	print(speech)
 	return {
@@ -140,7 +176,7 @@ def makeWebhookResult(req):
     }
 
 if __name__ == '__main__':
-    port = int(os.getenv('PORT', 5000))
+    port = int(os.getenv('PORT', 80))
 
     print ("Starting app on port %d" %(port))
 
