@@ -21,8 +21,8 @@ def webhook():
     if req.get("result").get("action") == "bank.rates":
         res = makeWebhookResult(req) 
     elif req.get("result").get("action") == "loan.emi":
-        res = loanEmi(req)
-       
+        #res = loanEmi(req)
+        res = compoundInterestReverse(req)
     res = json.dumps(res, indent=4)
     print(res)
     r = make_response(res)
@@ -54,6 +54,70 @@ def loanEmi(req):
         #"contextOut": [],
         "source": "special-calculator-python-webhook-api-ai"
     }
+def compoundInterest(req):
+    result = req.get("result")
+    parameters = result.get("parameters")
+    x = int(parameters.get("number"))
+    interest = parameters.get("percentage")
+    y = float(interest.strip('%'))
+    Payment = parameters.get("duration")
+    if str(Payment["unit"]) == "mo":
+        z = int(Payment["amount"]) / 12
+    elif str(Payment["unit"]) == "yr":
+        z = int(Payment["amount"])
+    #interest = float((interest/100))
+
+    #totalann = int((x*(pow(1 + ((y*.01)/1),z)))-x)
+    totalsemi = int((x*(pow(1 + ((y*.01)/2),(z*2))))-x)
+    #totalqtr = int((x*(pow(1 + ((y*.01)/4),(z*4))))-x)
+    #totalmth = int((x*(pow(1 + ((y*.01)/12),(z*12))))-x)
+
+    #yieldann = float((((x*(pow(1 + ((y*.01)/1),1)))-x)/x)*100)
+    yieldsemi = float((((x*(pow(1 + ((y*.01)/2),(2))))-x)/x)*100)
+    #yieldqtr = float((((x*(pow(1 + ((y*.01)/4),(4))))-x)/x)*100)
+    #yieldmth = float((((x*(pow(1 + ((y*.01)/12),(12))))-x)/x)*100)
+
+    #totalannMaturity = int(x/1+totalann/1)
+    totalsemiMaturity = int(x/1+totalsemi/1)
+    #totalqtrMaturity = int(x/1+totalqtr/1)
+    #totalmthMaturity = int(x/1+totalmth/1)
+    speech = "Total Interest :" + str(totalsemi)+"\nYield :"+str(yieldsemi)+"\nMaturity :"+str(totalsemiMaturity)
+    print("Response:")
+    print(speech)
+    return {
+        "speech": speech,
+        "displayText": speech,
+        #"data": {},
+        #"contextOut": [],
+        "source": "special-calculator-python-webhook-api-ai"
+    }
+def compoundInterestReverse(req):
+	result = req.get("result")
+	parameters = result.get("parameters")
+	m = int(parameters.get("number"))
+	x = 1
+	interest = parameters.get("percentage")
+	y = float(interest.strip('%'))
+	Payment = parameters.get("duration")
+	if str(Payment["unit"]) == "mo":
+		z = int(Payment["amount"]) / 12
+	elif str(Payment["unit"]) == "yr":
+		z = int(Payment["amount"])
+	totalSemi = float((x*(pow(1 + ((y*.01)/2),(z*2))))-x)
+	yieldSemi = float((((x*(pow(1 + ((y*.01)/2),(2))))-x)/x)*100)
+	
+	totalSemiMaturity = int(m/(x/1+totalSemi/1))
+	totalSemi = int(m - totalSemiMaturity)
+	speech = "Amount :"+ str(totalSemiMaturity)+"\nYield :"+str(yieldSemi)
+        print("Response:")
+	print(speech)
+	return{
+            "speech": speech,
+            "displayText": speech,
+            #"data": {},
+            #"contextOut": [],
+            "source": "special-calculator-python-webhook-api-ai"
+        }
 
 def makeWebhookResult(req):
     #if req.get("result").get("action") != "shipping.cost":
