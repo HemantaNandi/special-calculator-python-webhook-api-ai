@@ -1,7 +1,6 @@
 {
-  "name": "API.AI Shipping Costs Webhook",
-  "description": "API.AI Shipping Costs Webhook Sapmple",
-  "repository": "https://github.com/svet4/shipping-costs-sample",
-  "logo": "http://xvir.github.io/img/apiai.png",
+  "name": "API.AI",
+  "description": "API.AI",
+  "repository": "https://github.com/HemantaNandi/special-calculator-python-webhook-api-ai",
   "keywords": ["api.ai", "natural language"]
 }
