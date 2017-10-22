@@ -22,7 +22,7 @@ def webhook():
         res = makeWebhookResult(req) 
     elif req.get("result").get("action") == "loan.emi":
         #res = loanEmi(req)
-        res = compoundInterestReverse(req)
+        res = calculateFSF(req)
     res = json.dumps(res, indent=4)
     print(res)
     r = make_response(res)
@@ -118,6 +118,36 @@ def compoundInterestReverse(req):
             #"contextOut": [],
             "source": "special-calculator-python-webhook-api-ai"
         }
+def calculateFSF(req) :
+	result = req.get("result")
+	parameters = result.get("parameters")
+	a = int(parameters.get("number"))
+	Interest_rate = parameters.get("percentage")
+	b = float(Interest_rate.strip('%'))
+	Payment = parameters.get("duration")
+	if str(Payment["unit"]) == "mo":
+		c = int(Payment["amount"])
+	elif str(Payment["unit"]) == "yr":
+		c = int(Payment["amount"]) * 12
+	i = float((b/100)/12)
+	n = int(c*12)
+	v = int(1/(1+i))
+	z = pow((1+i),n)
+	w = pow(v,n)
+	
+	totala = int((a*((1-w)/i)*(1+i))*z)
+	totalamt = int(a*n)
+	totalint = int(totala - totalamt)
+        speech = "Amount :"+ str(totala)+"\nYield :"+str(totalamt)
+	print("Response:")
+	print(speech)
+	return {
+            "speech": speech,
+            "displayText": speech,
+            #"data": {},
+            #"contextOut": [],
+            "source": "special-calculator-python-webhook-api-ai"
+        }
 
 def makeWebhookResult(req):
     #if req.get("result").get("action") != "shipping.cost":
@@ -140,7 +170,7 @@ def makeWebhookResult(req):
     }
 
 if __name__ == '__main__':
-    port = int(os.getenv('PORT', 5000))
+    port = int(os.getenv('PORT', 80))
 
     print ("Starting app on port %d" %(port))
 
