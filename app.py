@@ -144,7 +144,7 @@ def calculateFSF(req) :
 	totala = int((a*((1-w)/i)*(1+i))*z)
 	totalamt = int(a*n)
 	totalint = int(totala - totalamt)
-        speech = "Amount :"+ str(totala)+"\nYield :"+str(totalint)
+	speech = "Amount :"+str(totala)+"\nYield :"+str(totalint)
 	print("Response:")
 	print(speech)
 	return {
